@@ -6,15 +6,19 @@ prcpTHRESH    <- 0.01    #precipitation threshold, in inches
 daysInMonth   <- 31      #days in month
 numYears      <- 1000    #number of years of simulation
 numDays       <- daysInMonth * numYears
-plotSummary   <- FALSE   # TRUE will plot the summary results, takes a while
+
+libraryFile   <- "mod_wilks_lib.R"
+inputFile     <- "janData.txt"
+plotSummary   <- TRUE   # TRUE will plot the summary results
+plotCodeFile  <- "mod_wilks_plot.R"
 plotFileName  <- "results_summary.pdf"
 
 # library file
-source("mod_wilks_lib.R")
+source(libraryFile)
 
 # input station precipitation data; "janData.txt" has values in inches
 # should be consistent with units of prcpTHRESH
-prcpData <- read.csv("janData.txt", header=FALSE, as.is=TRUE)
+prcpData <- read.csv(inputFile, header=FALSE, as.is=TRUE)
 
 # subsets for analysis
 occDataObs <- prcpData[, 3:(2 + numStn)]
@@ -127,3 +131,6 @@ for (eachStn in 1:numStn) {
 }
 amtDataSyn <- ifelse(amtDataSyn > 0 & amtDataSyn < prcpTHRESH, prcpTHRESH, amtDataSyn)
 
+#-------------------------------------------------------------------------------
+# summary plots
+source(plotCodeFile)

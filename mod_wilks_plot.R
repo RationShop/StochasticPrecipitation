@@ -1,6 +1,7 @@
 # plot summary stats
 
 if(plotSummary) {
+  
   pdf(plotFileName)
   
   # compare number of rainy days ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

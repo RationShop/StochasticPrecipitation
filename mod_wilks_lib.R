@@ -12,7 +12,10 @@ FnComputeMarkovProbs <- function(tsData) {
   n11 <- ifelse(occ1==1 & occ2==1, 1, 0)
   n10 <- ifelse(occ1==1 & occ2==0, 1, 0)
   
-  return (c(sum(n01,na.rm=TRUE), sum(n00,na.rm=TRUE), sum(n11,na.rm=TRUE), sum(n10,na.rm=TRUE)))
+  return (c(sum(n01, na.rm=TRUE), 
+            sum(n00, na.rm=TRUE), 
+            sum(n11, na.rm=TRUE), 
+            sum(n10, na.rm=TRUE)))
 }
 
 #-------------------------------------------------------------------------------
@@ -50,9 +53,9 @@ FnComputeAmtContinuityRatio <- function(ts1, ts2) {
   ts1 <- ts1[inds]
   ts2 <- ts2[inds]
   
-  #numerator, E(Xi|Xi>0 & Xj==0)
+  # numerator, E(Xi|Xi>0 & Xj==0)
   numer <- sum(ifelse(ts1>prcpTHRESH & ts2<=prcpTHRESH, ts1, NA), na.rm=TRUE)
-  #denominator, E(Xi|Xi>0 & Xj>0)
+  # denominator, E(Xi|Xi>0 & Xj>0)
   denom <- sum(ifelse(ts1>prcpTHRESH & ts2>prcpTHRESH, ts1, NA), na.rm=TRUE)
   
   return (numer/denom)
@@ -69,9 +72,9 @@ FnComputeOccContinuityRatio <- function(ts1, ts2) {
   ts1 <- ts1[inds]
   ts2 <- ts2[inds]
   
-  #numerator, E(Xi|Xi>0 & Xj==0)
+  # numerator, E(Xi|Xi>0 & Xj==0)
   numer <- sum(ifelse(ts1==1 & ts2==0, ts1, NA), na.rm=TRUE)
-  #denominator, E(Xi|Xi>0 & Xj>0)
+  # denominator, E(Xi|Xi>0 & Xj>0)
   denom <- sum(ifelse(ts1==1 & ts2==1, ts1, NA), na.rm=TRUE)
   
   return (numer/denom)
@@ -84,7 +87,7 @@ FnParamA <- function(x) {
 }
 
 #-------------------------------------------------------------------------------
-# function for the 1st order markov Chain precip occurence process; Eqn
+# function for the 1st order markov Chain precip occurence process
 FnNewMarkovState <- function(randNum, prob) {
   return (ifelse(randNum <= prob, 1, 0))
 }
@@ -93,14 +96,12 @@ FnNewMarkovState <- function(randNum, prob) {
 # computes monthly totals (number of rainy days, monthly rainfall total, etc)
 FnCountMonthlySum <- function(tsData, daysInMonth) {
   newData <- matrix(tsData, nrow=daysInMonth)
-  #   sums <- colSums(newData, na.rm=TRUE)
-  #   return (mean(sums, na.rm=TRUE))
-  return (colSums(newData, na.rm=TRUE))
-  
+  return (colSums(newData, na.rm=TRUE))  
 }
 
 # ------------------------------------------------------------------------------
 # function to make a correlation matrix positive definite
+# based on the procedure of Brissette et al. (2007)
 eigenSmall <- 1e-6
 FnFixCorrMatrix <- function(corrMatrix) {
   
@@ -110,14 +111,14 @@ FnFixCorrMatrix <- function(corrMatrix) {
   # fix the correlation matrix if chol fails
   while(cholError) {
     
-    #replace -ve eigen values with a small +ve number
+    # replace -ve eigen values with a small +ve number
     neweig  <- eigen(corrMatrix)
     neweig$values[neweig$values < 0] <- eigenSmall
     
-    #inv = transp for eig vectors
+    # inv = transp for eig vectors
     corrMatrix <- neweig$vectors %*% diag(neweig$values) %*% t(neweig$vectors) 
     
-    #try chol again
+    # try chol again
     cholStatus <- try(outChol <- chol(corrMatrix), silent=TRUE) 
     cholError  <- ifelse(class(cholStatus) == "try-error", TRUE, FALSE)
   }
